@@ -1,41 +1,43 @@
-import React from 'react';
-import { PaginationProps } from '../types';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from "react";
+import { PaginationProps } from "../types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
   const generatePageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisiblePages = 5;
-    
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 4; i++) {
-          pages.push(i);
-        }
-        pages.push('...');
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(1);
-        pages.push('...');
-        for (let i = totalPages - 3; i <= totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        pages.push(1);
-        pages.push('...');
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i);
-        }
-        pages.push('...');
-        pages.push(totalPages);
-      }
+    //Привіт
+    // Додав функцію, щоб не дублювати постійно цикл for
+    // Створили масив з довжиною length і заповнюємо його значеннями від start до end
+
+    const range = (start: number, end: number) => {
+      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    };
+
+    // Тут генеруємо до 5 сторінок, якщо їх мало
+    if (totalPages <= 5) {
+      return range(1, totalPages);
     }
-    
-    return pages;
+
+    // тут генеруємо 1, 2, 3, 4, ..., totalPages
+    if (currentPage <= 3) {
+      return [...range(1, 4), "...", totalPages];
+    }
+    //  Тут аналогічно до першого випадку але з іншого боку
+    if (currentPage >= totalPages - 2) {
+      return [1, "...", ...range(totalPages - 3, totalPages)];
+    }
+
+    // за замовчуванням, якщо сторінка десь посередині показуємо 1, 2, 3, ..., 4, currentPage, 6, ..., 50 - наприклад
+    return [
+      1,
+      "...",
+      ...range(currentPage - 1, currentPage + 1),
+      "...",
+      totalPages,
+    ];
   };
 
   const pages = generatePageNumbers();
@@ -53,8 +55,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             disabled={currentPage === 1}
             className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
               currentPage === 1
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white hover:bg-gray-50'
+                ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                : "text-gray-700 bg-white hover:bg-gray-50"
             } transition-colors duration-200`}
           >
             Previous
@@ -64,8 +66,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             disabled={currentPage === totalPages}
             className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
               currentPage === totalPages
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 bg-white hover:bg-gray-50'
+                ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                : "text-gray-700 bg-white hover:bg-gray-50"
             } transition-colors duration-200`}
           >
             Next
@@ -74,28 +76,31 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-700">
-              Showing page <span className="font-medium">{currentPage}</span> of{' '}
+              Showing page <span className="font-medium">{currentPage}</span> of{" "}
               <span className="font-medium">{totalPages}</span>
             </p>
           </div>
           <div>
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <nav
+              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
               <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 text-sm font-medium ${
                   currentPage === 1
-                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                    : 'text-gray-500 bg-white hover:bg-gray-50'
+                    ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                    : "text-gray-500 bg-white hover:bg-gray-50"
                 } transition-colors duration-200`}
               >
                 <span className="sr-only">Previous</span>
                 <ChevronLeft className="h-5 w-5" aria-hidden="true" />
               </button>
-              
+
               {pages.map((page, index) => (
                 <React.Fragment key={index}>
-                  {page === '...' ? (
+                  {page === "..." ? (
                     <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
                       ...
                     </span>
@@ -104,8 +109,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                       onClick={() => onPageChange(page as number)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors duration-200 ${
                         currentPage === page
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                          : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                       }`}
                     >
                       {page}
@@ -113,14 +118,14 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                   )}
                 </React.Fragment>
               ))}
-              
+
               <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 text-sm font-medium ${
                   currentPage === totalPages
-                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                    : 'text-gray-500 bg-white hover:bg-gray-50'
+                    ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                    : "text-gray-500 bg-white hover:bg-gray-50"
                 } transition-colors duration-200`}
               >
                 <span className="sr-only">Next</span>
